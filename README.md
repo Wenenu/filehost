@@ -14,7 +14,7 @@ If you get `Error: No such built-in module: node:sqlite`, your Node is too old �
 
 ```bash
 npm install
-# create .env — BASE_URL and PORT are already set for upload.wested.lol
+# create .env
 npm start
 ```
 
@@ -22,38 +22,34 @@ Or on Windows, just double-click **start.bat** — it creates `.env` automatical
 
 Open `http://localhost:3000` and **register the first account — it becomes admin automatically**. Your API key appears on the dashboard.
 
-## Publishing it at upload.wested.lol (Cloudflare Tunnel)
+## Publishing it
 
 No port forwarding or public IP needed — the tunnel makes an outbound connection from your PC to Cloudflare.
 
 1. Install **cloudflared** and add it to PATH: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/
-2. Double-click **cloudflared\setup-tunnel.bat** — it logs you in (opens a browser), creates the tunnel, routes `upload.wested.lol` to it, and writes `cloudflared\config.yml`
+2. Double-click **cloudflared\setup-tunnel.bat** — it logs you in (opens a browser), creates the tunnel, routes to it, and writes `cloudflared\config.yml`
 3. Double-click **cloudflared\run-tunnel.bat** to start the tunnel (keep it running)
 4. Start the server with **start.bat**
-5. Visit **https://upload.wested.lol** — that's your image host
+5. Visit it
 
 Run the two `start.bat` / `run-tunnel.bat` windows on boot (or use Task Scheduler) and it stays up.
 
-> Requires `wested.lol` to be on Cloudflare (nameservers pointing at Cloudflare) — `cloudflared tunnel route dns` needs it.
+
 
 ## Setting up ShareX
 
 **Option A — import the ready-made file:**
 1. Copy `sharex-upload.sxcu` to your main PC
 2. Open ShareX → **Destinations** → **Custom uploader** → **Import** → **From file** → pick `sharex-upload.sxcu`
-3. Open **Destinations** → **Custom uploader** → select *upload.wested.lol* → replace `REPLACE_WITH_YOUR_API_KEY` in the **Headers** tab with your API key (from the dashboard)
-4. Set **Destinations** → **Image uploader** → *upload.wested.lol*
+3. Open **Destinations** → **Custom uploader** → select host → replace `REPLACE_WITH_YOUR_API_KEY` in the **Headers** tab with your API key (from the dashboard)
+4. Set **Destinations** → **Image uploader** → host
 5. Take a screenshot — the link is copied to your clipboard
 
 **Option B — auto-generated (key already baked in):**
-1. Log in to your dashboard at https://upload.wested.lol
+1. Log in to your dashboard
 2. Click **download sharex config (.sxcu)**
 3. ShareX → **Destinations** → **Custom uploader** → **Import** → **From file** → pick it
 4. Set **Destinations** → **Image uploader** → the new uploader
-
-### How the API works
-
-`POST https://upload.wested.lol/api/upload` — multipart form with a `file` field.
 
 ### How the API works
 
@@ -76,7 +72,6 @@ Files can be deleted with the `deleteUrl` (`/f/<name>?delete=<key>`) or from the
 | Variable | Default | What it does |
 |---|---|---|
 | `PORT` | `3000` | Listen port |
-| `BASE_URL` | `https://upload.wested.lol` | Base URL used in generated links |
 | `UPLOAD_DIR` | `./uploads` | Where image files are saved |
 | `DB_PATH` | `./data/upload.db` | SQLite database file |
 | `MAX_UPLOAD_MB` | `20` | Max upload size |
