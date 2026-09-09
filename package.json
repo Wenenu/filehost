@@ -1,0 +1,20 @@
+{
+  "name": "upload",
+  "version": "1.0.0",
+  "description": "Self-hosted ShareX image host with auth, dashboard and galleries",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --no-warnings server.js",
+    "dev": "node --no-warnings --watch server.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "multer": "^2.0.0"
+  }
+}
