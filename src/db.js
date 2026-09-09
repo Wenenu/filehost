@@ -4,6 +4,10 @@ const fs = require('node:fs');
 const path = require('node:path');
 const config = require('./config');
 
+// Make sure the data and upload folders exist before opening the database.
+fs.mkdirSync(path.dirname(config.dbPath), { recursive: true });
+fs.mkdirSync(config.uploadDir, { recursive: true });
+
 // SQLite driver: prefer the built-in node:sqlite (Node 22.5+); fall back to
 // better-sqlite3 (an OPTIONAL dependency — if its native build failed during
 // npm install, the app still runs fine on Node 22.5+, which is the supported
@@ -29,17 +33,13 @@ try {
     '\n[upload] Could not open the SQLite database: ' +
       String((err && err.message) || err).split('\n')[0] + '.\n' +
       '  Your Node.js is v' + process.versions.node + ' (built-in SQLite needs v22.5+).\n' +
-      '  Option 1 (recommended): install Node 22.13 or newer from https://nodejs.org,\n' +
-      '      then re-run: npm install\n' +
-      '  Option 2: keep your Node version and make better-sqlite3 work:\n' +
-      '      npm install better-sqlite3@^12 --save-optional\n' +
-      '      (needs a C++ build toolchain when no prebuilt binary is available)\n'
+      '  The app falls back to better-sqlite3 on older Node versions.\n' +
+      '  Fix: run "npm install" in the project folder (the pinned better-sqlite3\n' +
+      '  12.6.0 ships prebuilt binaries for Node 20+; if your network blocks the\n' +
+      '  download, install Node 22.13+ from https://nodejs.org instead).\n'
   );
   process.exit(1);
 }
-
-fs.mkdirSync(path.dirname(config.dbPath), { recursive: true });
-fs.mkdirSync(config.uploadDir, { recursive: true });
 
 db.exec('PRAGMA journal_mode = WAL;');
 db.exec('PRAGMA foreign_keys = ON;');

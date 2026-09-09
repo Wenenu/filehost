@@ -14,7 +14,7 @@ A self-hosted image host built for [ShareX](https://getsharex.com) — like uplo
 
 If you get `Error: No such built-in module: node:sqlite`, your Node is too old — install Node 22.13+ and re-run `npm install`.
 
-> `better-sqlite3` is an *optional* dependency used only on Node versions without the built-in SQLite (20 – 22.4). On Node 22.5+ it isn't loaded at all, so if `npm install` prints a scary build error about `better-sqlite3` you can safely ignore it — or upgrade Node to make it go away.
+> `better-sqlite3` is an *optional* dependency used only on Node versions without the built-in SQLite (20 – 22.4). It is pinned to `12.6.0`, the last release with prebuilt binaries for Node 20 (newer 12.x builds require a C++ toolchain). On Node 22.5+ it isn't loaded at all, so if `npm install` prints a scary build error about `better-sqlite3` you can safely ignore it — or upgrade Node to make it go away.
 
 ## Setup
 
