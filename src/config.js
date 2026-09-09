@@ -63,6 +63,8 @@ const config = {
     .map((s) => s.trim().toLowerCase())
     .filter(Boolean),
   nameLength: Math.max(4, Math.min(16, envInt('NAME_LENGTH', 8))),
+  // anonymous uploads are auto-deleted after this many hours (0 = disabled)
+  anonRetentionHours: Math.max(0, envInt('ANON_RETENTION_HOURS', 24)),
   rate: {
     uploadPerMinute: envInt('UPLOAD_RATE_PER_MINUTE', 30),
     loginPer15Min: envInt('LOGIN_RATE_PER_15_MIN', 15),

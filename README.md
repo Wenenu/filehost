@@ -5,6 +5,7 @@ A self-hosted image host built for [ShareX](https://getsharex.com) — like uplo
 - **ShareX ready**: upload with your API key, get a short URL, one-click `.sxcu` config download
 - **Full auth**: register, login, sessions, API keys, admin panel
 - **Website**: drag & drop / clipboard-paste upload, per-user galleries, file pages, dashboard
+- **Anonymous uploads expire after 24 hours** (logged-in uploads are kept forever)
 - **Zero external services**: SQLite database (built into Node), files saved to a folder on disk
 - **Runs anywhere**: Windows / Linux / macOS, no Docker needed
 
@@ -20,12 +21,11 @@ If you get `Error: No such built-in module: node:sqlite`, your Node is too old �
 
 ```bash
 npm install
-copy .env.example .env    # Windows (or: cp .env.example .env)
-# edit .env — PORT and BASE_URL are already set for upload.wested.lol
+# create .env — BASE_URL and PORT are already set for upload.wested.lol
 npm start
 ```
 
-Or on Windows, just double-click **start.bat** — it installs dependencies and starts the server.
+Or on Windows, just double-click **start.bat** — it creates `.env` automatically, installs dependencies and starts the server.
 
 Open `http://localhost:3000` and **register the first account — it becomes admin automatically**. Your API key appears on the dashboard.
 
@@ -91,6 +91,7 @@ Files can be deleted with the `deleteUrl` (`/f/<name>?delete=<key>`) or from the
 | `REGISTRATION_OPEN` | `1` | Allow new signups |
 | `ADMIN_USERNAME` | empty | Force these usernames to be admins |
 | `NAME_LENGTH` | `8` | Random filename length |
+| `ANON_RETENTION_HOURS` | `24` | Auto-delete anonymous uploads after this many hours (`0` disables) |
 
 ## Pages
 
@@ -121,3 +122,4 @@ public/              stylesheet + frontend JS
 - Passwords are hashed with scrypt; sessions are random tokens stored in SQLite, 30-day expiry
 - Uploads are rate-limited per IP; filenames are random, so links are unguessable
 - Images are served with long cache headers — deleting a file removes it from disk
+- **Anonymous uploads are deleted automatically after 24 hours** (a sweeper runs every 10 minutes, and at startup). Files uploaded while logged in are kept forever. Tune it with `ANON_RETENTION_HOURS` in `.env` (`0` keeps anonymous files too, but they have no owner or delete link once the session cookie is gone, so the default is recommended).

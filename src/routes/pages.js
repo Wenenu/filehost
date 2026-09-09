@@ -105,12 +105,13 @@ router.get('/', (req, res) => {
   const body = `
   <section class="hero">
     <h1>ShareX-ready image hosting</h1>
-    <p class="sub">Drop a file, get a link. Uploads are anonymous unless you log in — <a href="/register">register</a> for your own gallery &amp; API key.</p>
+    <p class="sub">Drop a file, get a link. <strong>Anonymous uploads are deleted automatically after ${config.anonRetentionHours} hours</strong> — <a href="/register">register</a> (free) to keep files permanently and get your own gallery &amp; ShareX API key.</p>
     <div class="dropzone" id="dropzone" tabindex="0">
       <div class="dz-inner">
         <div class="dz-icon">⬆</div>
         <p><strong>drag &amp; drop</strong> or <strong>click</strong> to upload</p>
         <p class="dz-hint">or paste from clipboard (ctrl+v) · max ${config.maxUploadBytes / 1024 / 1024} MB</p>
+        <p class="dz-hint">anonymous uploads are removed after ${config.anonRetentionHours} hours · log in to keep them forever</p>
       </div>
       <input type="file" id="file-input" hidden multiple>
     </div>
@@ -305,6 +306,11 @@ router.get('/f/:name', (req, res) => {
       ? `<p class="muted smallnote">This anonymous upload can be deleted with its delete link:<br><code class="wrap">${config.baseUrl}/f/${esc(file.name)}?delete=${esc(file.delete_key)}</code></p>`
       : '';
 
+  // anonymous uploads are wiped after the retention window (default 24h)
+  const anonNote = !file.user_id
+    ? `<p class="muted smallnote">Anonymous upload — will be deleted automatically after ${config.anonRetentionHours} hours.</p>`
+    : '';
+
   const media = isImage(file.ext)
     ? `<img class="viewer" src="/i/${esc(file.name)}" alt="${esc(file.original_name)}">`
     : `<div class="viewer filecell big"><div class="fileicon">${esc(file.ext.toUpperCase())}</div><a class="btn primary" href="/i/${esc(file.name)}" download="${esc(file.original_name)}">download file</a></div>`;
@@ -320,6 +326,7 @@ router.get('/f/:name', (req, res) => {
         <tr><td>views</td><td>${file.views}</td></tr>
         <tr><td>uploader</td><td>${uploader}</td></tr>
       </table>
+      ${anonNote}
       <div class="btnrow">
         <button class="btn" data-copy="${config.baseUrl}/i/${esc(file.name)}">copy url</button>
         <button class="btn" data-copy="${config.baseUrl}/f/${esc(file.name)}">copy page</button>

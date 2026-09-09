@@ -110,6 +110,8 @@ const statements = {
   userFilesPublic: db.prepare('SELECT * FROM files WHERE user_id = ? AND user_id IS NOT NULL ORDER BY created_at DESC LIMIT ?'),
   recentFiles: db.prepare('SELECT * FROM files ORDER BY created_at DESC LIMIT ?'),
   allFiles: db.prepare('SELECT * FROM files ORDER BY created_at DESC LIMIT ? OFFSET ?'),
+  listAnonymousOlderThan: db.prepare('SELECT name FROM files WHERE user_id IS NULL AND created_at < ?'),
+  deleteAnonymousOlderThan: db.prepare('DELETE FROM files WHERE user_id IS NULL AND created_at < ?'),
   deleteFile: db.prepare('DELETE FROM files WHERE id = ?'),
   incrementViews: db.prepare('UPDATE files SET views = views + 1 WHERE id = ?'),
   userStorage: db.prepare('SELECT COALESCE(SUM(size), 0) AS n FROM files WHERE user_id = ?'),

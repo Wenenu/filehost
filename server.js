@@ -51,6 +51,23 @@ app.get('/robots.txt', (_req, res) => {
 app.use('/api', api.router);
 app.use('/', pages.router);
 
+// ---------- anonymous upload retention ----------
+// Files uploaded without an account are deleted automatically after
+// config.anonRetentionHours (default 24h) to keep the host tidy.
+function sweepAnonymousFiles() {
+  if (config.anonRetentionHours <= 0) return;
+  const cutoff = Date.now() - config.anonRetentionHours * 60 * 60 * 1000;
+  const rows = statements.listAnonymousOlderThan.all(cutoff);
+  if (!rows.length) return;
+  statements.deleteAnonymousOlderThan.run(cutoff);
+  for (const row of rows) {
+    fs.unlink(path.join(config.uploadDir, row.name), () => {});
+  }
+  console.log(`  removed ${rows.length} anonymous upload(s) older than ${config.anonRetentionHours}h`);
+}
+sweepAnonymousFiles();
+setInterval(sweepAnonymousFiles, 10 * 60 * 1000); // every 10 minutes
+
 // ---------- startup ----------
 
 statements.pruneSessions.run(Date.now());
