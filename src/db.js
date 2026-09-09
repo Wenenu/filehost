@@ -4,19 +4,42 @@ const fs = require('node:fs');
 const path = require('node:path');
 const config = require('./config');
 
-// Use the built-in node:sqlite when available (Node 22.5+); otherwise fall back
-// to better-sqlite3 so older Node versions (20+) still run.
-let Database;
+// SQLite driver: prefer the built-in node:sqlite (Node 22.5+); fall back to
+// better-sqlite3 (an OPTIONAL dependency — if its native build failed during
+// npm install, the app still runs fine on Node 22.5+, which is the supported
+// path). Construction happens in the same try below, because better-sqlite3
+// loads lazily and only throws when the database is actually created.
+let Database = null;
 try {
   ({ DatabaseSync: Database } = require('node:sqlite'));
 } catch {
-  Database = require('better-sqlite3');
+  try {
+    Database = require('better-sqlite3');
+  } catch {
+    // neither driver present — the friendly error below fires
+  }
+}
+
+let db;
+try {
+  if (!Database) throw new Error('no SQLite driver available');
+  db = new Database(config.dbPath);
+} catch (err) {
+  console.error(
+    '\n[upload] Could not open the SQLite database: ' +
+      String((err && err.message) || err).split('\n')[0] + '.\n' +
+      '  Your Node.js is v' + process.versions.node + ' (built-in SQLite needs v22.5+).\n' +
+      '  Option 1 (recommended): install Node 22.13 or newer from https://nodejs.org,\n' +
+      '      then re-run: npm install\n' +
+      '  Option 2: keep your Node version and make better-sqlite3 work:\n' +
+      '      npm install better-sqlite3@^12 --save-optional\n' +
+      '      (needs a C++ build toolchain when no prebuilt binary is available)\n'
+  );
+  process.exit(1);
 }
 
 fs.mkdirSync(path.dirname(config.dbPath), { recursive: true });
 fs.mkdirSync(config.uploadDir, { recursive: true });
-
-const db = new Database(config.dbPath);
 
 db.exec('PRAGMA journal_mode = WAL;');
 db.exec('PRAGMA foreign_keys = ON;');
