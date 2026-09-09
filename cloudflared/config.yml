@@ -9,5 +9,8 @@ credentials-file: C:\Users\YOU\.cloudflared\PASTE_TUNNEL_ID.json
 ingress:
   - hostname: upload.wested.lol
     service: http://localhost:3000
+  # SSH access for remote admin (protected by a Cloudflare Access app)
+  - hostname: ssh-upload.wested.lol
+    service: ssh://localhost:22
   # catch-all rule (required) - everything else gets a 404
   - service: http_status:404

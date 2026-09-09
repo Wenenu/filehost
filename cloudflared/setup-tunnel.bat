@@ -40,6 +40,8 @@ if not defined TUNNEL_ID (
   >> config.yml echo ingress:
   >> config.yml echo   - hostname: upload.wested.lol
   >> config.yml echo     service: http://localhost:3000
+  >> config.yml echo   - hostname: ssh-upload.wested.lol
+  >> config.yml echo     service: ssh://localhost:22
   >> config.yml echo   - service: http_status:404
   echo Wrote cloudflared\config.yml with tunnel ID %TUNNEL_ID%
 )
