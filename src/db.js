@@ -2,13 +2,21 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const { DatabaseSync } = require('node:sqlite');
 const config = require('./config');
+
+// Use the built-in node:sqlite when available (Node 22.5+); otherwise fall back
+// to better-sqlite3 so older Node versions (20+) still run.
+let Database;
+try {
+  ({ DatabaseSync: Database } = require('node:sqlite'));
+} catch {
+  Database = require('better-sqlite3');
+}
 
 fs.mkdirSync(path.dirname(config.dbPath), { recursive: true });
 fs.mkdirSync(config.uploadDir, { recursive: true });
 
-const db = new DatabaseSync(config.dbPath);
+const db = new Database(config.dbPath);
 
 db.exec('PRAGMA journal_mode = WAL;');
 db.exec('PRAGMA foreign_keys = ON;');

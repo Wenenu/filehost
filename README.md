@@ -10,7 +10,9 @@ A self-hosted image host built for [ShareX](https://getsharex.com) — like uplo
 
 ## Requirements
 
-- **Node.js 22.5 or newer** (uses the built-in SQLite module). Grab it from https://nodejs.org
+- **Node.js 20 or newer**. The app uses the built-in SQLite module on Node 22.5+, and automatically falls back to `better-sqlite3` on older versions (20 – 22.4), so any recent Node works. **Node 22.13+ or newer LTS is recommended**: https://nodejs.org
+
+If you get `Error: No such built-in module: node:sqlite`, your Node is too old — either install a newer Node (recommended) or re-run `npm install` to pick up the `better-sqlite3` fallback.
 
 ## Setup
 
