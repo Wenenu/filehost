@@ -17,24 +17,46 @@ A self-hosted image host built for [ShareX](https://getsharex.com) — like uplo
 ```bash
 npm install
 copy .env.example .env    # Windows (or: cp .env.example .env)
-# edit .env — at minimum set PORT and optionally BASE_URL
+# edit .env — PORT and BASE_URL are already set for upload.wested.lol
 npm start
 ```
 
 Or on Windows, just double-click **start.bat** — it installs dependencies and starts the server.
 
-Open `http://localhost:3000` (or your PC's LAN IP) and **register the first account — it becomes admin automatically**.
+Open `http://localhost:3000` and **register the first account — it becomes admin automatically**. Your API key appears on the dashboard.
 
-> If the server runs on a second PC, open port `3000` in Windows Firewall, then use `http://<that-pc-ip>:3000` from your main PC. For a domain or reverse proxy, set `BASE_URL` in `.env`.
+## Publishing it at upload.wested.lol (Cloudflare Tunnel)
+
+No port forwarding or public IP needed — the tunnel makes an outbound connection from your PC to Cloudflare.
+
+1. Install **cloudflared** and add it to PATH: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/
+2. Double-click **cloudflared\setup-tunnel.bat** — it logs you in (opens a browser), creates the tunnel, routes `upload.wested.lol` to it, and writes `cloudflared\config.yml`
+3. Double-click **cloudflared\run-tunnel.bat** to start the tunnel (keep it running)
+4. Start the server with **start.bat**
+5. Visit **https://upload.wested.lol** — that's your image host
+
+Run the two `start.bat` / `run-tunnel.bat` windows on boot (or use Task Scheduler) and it stays up.
+
+> Requires `wested.lol` to be on Cloudflare (nameservers pointing at Cloudflare) — `cloudflared tunnel route dns` needs it.
 
 ## Setting up ShareX
 
-1. Open ShareX → **Destinations** → **Custom uploader** → **Import** → **From file**
-2. Pick the config you downloaded from your **dashboard** (the "download sharex config" button) — your API key is already baked in
-3. Set **Destinations** → **Image uploader** → your uploader name
-4. Take a screenshot — the link is copied to your clipboard
+**Option A — import the ready-made file:**
+1. Copy `sharex-upload.sxcu` to your main PC
+2. Open ShareX → **Destinations** → **Custom uploader** → **Import** → **From file** → pick `sharex-upload.sxcu`
+3. Open **Destinations** → **Custom uploader** → select *upload.wested.lol* → replace `REPLACE_WITH_YOUR_API_KEY` in the **Headers** tab with your API key (from the dashboard)
+4. Set **Destinations** → **Image uploader** → *upload.wested.lol*
+5. Take a screenshot — the link is copied to your clipboard
 
-You can also generate the config yourself at any time: `GET /api/sharex` (logged in).
+**Option B — auto-generated (key already baked in):**
+1. Log in to your dashboard at https://upload.wested.lol
+2. Click **download sharex config (.sxcu)**
+3. ShareX → **Destinations** → **Custom uploader** → **Import** → **From file** → pick it
+4. Set **Destinations** → **Image uploader** → the new uploader
+
+### How the API works
+
+`POST https://upload.wested.lol/api/upload` — multipart form with a `file` field.
 
 ### How the API works
 
@@ -57,7 +79,7 @@ Files can be deleted with the `deleteUrl` (`/f/<name>?delete=<key>`) or from the
 | Variable | Default | What it does |
 |---|---|---|
 | `PORT` | `3000` | Listen port |
-| `BASE_URL` | auto (LAN IP) | Base URL used in generated links |
+| `BASE_URL` | `https://upload.wested.lol` | Base URL used in generated links |
 | `UPLOAD_DIR` | `./uploads` | Where image files are saved |
 | `DB_PATH` | `./data/upload.db` | SQLite database file |
 | `MAX_UPLOAD_MB` | `20` | Max upload size |

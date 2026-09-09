@@ -324,7 +324,7 @@ router.get('/sharex', auth.requireAuth, (req, res) => {
   const user = statements.findUserById.get(req.user.id);
   const configFile = {
     Version: '13.0.1',
-    Name: 'My upload server',
+    Name: config.baseUrl.replace(/^https?:\/\//, ''),
     DestinationType: 'ImageUploader, FileUploader, TextUploader',
     RequestMethod: 'POST',
     RequestURL: `${config.baseUrl}/api/upload`,
