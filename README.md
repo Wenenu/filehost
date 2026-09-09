@@ -1,13 +1,6 @@
 # upload
 
-A self-hosted image host built for [ShareX](https://getsharex.com) — like upload.systems / pays.host, but on your own PC.
-
-- **ShareX ready**: upload with your API key, get a short URL, one-click `.sxcu` config download
-- **Full auth**: register, login, sessions, API keys, admin panel
-- **Website**: drag & drop / clipboard-paste upload, per-user galleries, file pages, dashboard
-- **Anonymous uploads expire after 24 hours** (logged-in uploads are kept forever)
-- **Zero external services**: SQLite database (built into Node), files saved to a folder on disk
-- **Runs anywhere**: Windows / Linux / macOS, no Docker needed
+A self-hosted image host built for [ShareX](https://getsharex.com)
 
 ## Requirements
 
